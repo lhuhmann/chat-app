@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- for JS socketio support-->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js"></script>
+        <script src="{{ url_for('static', filename='index.js') }}"></script>
+        <title>Add Channel</title>
+    </head>
+    <body>
+        <ul id="channels_list">
+        </ul>
+
+        <form action="">
+            <input id="channel" autocomplete="off" autofocus placeholder="Channel name" type="text">
+            <button type="button" id="channel_submit">Submit</button>
+        </form>
+    </body>
+</html>
