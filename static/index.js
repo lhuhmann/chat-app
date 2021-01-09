@@ -16,10 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // When a new channel name is announced, add it to the list
     socket.on('announce', data => {
-        console.log(data["channels"])
-        // const abc = document.createElement("abc");
-        // abc.innerHTML = data["channels"];
-        // document.querySelector("#channels").append(abc);
+        // console.log(data["channels"])
+        // clear list of channels
+        document.getElementById("channels_list").innerHTML = "";
+        // show list of channels
         data["channels"].forEach(function (item) {
             var ul = document.getElementById('channels_list');
             var li = document.createElement("li");
