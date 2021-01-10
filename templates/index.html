@@ -7,17 +7,19 @@
         <title>Flack</title>
     </head>
     <body>
+
         <section>
             <h1>Channels</h1>
             <ul id="channels_list">
-                <li>general</li>
             </ul>
         </section>
+
         <!-- Prevent the form from actually submitting and instead click the button.
         We want the user to have the same action on hitting enter as on the button click. -->
         <form onsubmit="document.querySelector('#channel_submit').click(); return false;">
             <input id="channel" autocomplete="off" autofocus placeholder="Channel name" type="text">
             <button type="button" id="channel_submit">Submit</button>
         </form>
+
     </body>
 </html>
