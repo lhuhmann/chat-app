@@ -1,6 +1,4 @@
 function display_channels(channels) {
-    console.log("displaying channels:")
-    console.log(channels)
     // clear list of channels
     document.getElementById("channels_list").innerHTML = "";
     // show list of channels
@@ -12,13 +10,30 @@ function display_channels(channels) {
     });
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Set starting channels to contain only general channel
-    // if (!localStorage.getItem('user'))
-    //     localStorage.setItem('channels', JSON.stringify(['general']));
+function display_username(username) {
+    // Add to the document
+    const name = document.createElement("name")
+    // Important to use backticks and not apostrophes/single quotes here, 
+    // otherwise template literals will not resovle.
+    name.innerHTML = `Username: ${username}`;
+    document.querySelector("#displayed_username").append(name);
+}
 
-    // Display current value of channels
-    // display_channels(JSON.parse(localStorage.getItem('channels')));
+document.addEventListener('DOMContentLoaded', () => {
+    // if user exists, display username and channel form but not
+    // username form
+    if (localStorage.getItem('username')) {
+        console.log('user exists')
+        display_username(localStorage.getItem('username'));
+        document.querySelector("#username_form").style.visibility = 'hidden'
+        document.querySelector("#channel_form").style.visibility = 'visible'
+    // If user doesn't exist, don't display channel form and
+    // only display username creation form.
+    } else {
+        console.log('user does not exist')
+        document.querySelector("#username_form").style.visibility = 'visible'
+        document.querySelector("#channel_form").style.visibility = 'hidden'
+    }
 
     // Connect to websocket
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
@@ -28,12 +43,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // upon connecting, get updated list of channels
         socket.emit('update channels');
 
-        // When submit_channel button is clicked,
+        // When channel_submit button is clicked,
         // emit an update channels event with the
         // channel name
         document.querySelector('#channel_submit').onclick = function() {
             const new_channel = document.querySelector('#channel').value
             socket.emit('update channels', new_channel);
+        };
+
+        // When username_submit button is clicked,
+        // emit an add username event with the
+        // username
+        document.querySelector('#username_submit').onclick = function() {
+            const username = document.querySelector('#username').value
+            socket.emit('add username', username);
         };
     });
 
@@ -44,7 +67,18 @@ document.addEventListener('DOMContentLoaded', () => {
         display_channels(channels)
         // clear field where new channel name was entered
         document.getElementById('channel').value = ''
-        console.log("after clearing input")
     });
 
+    socket.on('send username', data => {
+        const username = data["username"] 
+        console.log("username is")
+        console.log(username)
+        // add username to local storage
+        localStorage.setItem('username', username);
+        // display username
+        display_username(username)
+        // hide username form and show channel form
+        document.querySelector("#username_form").style.visibility = 'hidden'
+        document.querySelector("#channel_form").style.visibility = 'visible'
+    });
 });

@@ -25,7 +25,7 @@ def update_channels(new_channel = None):
         channels.append(new_channel) if new_channel not in channels else channels
     emit("send channels", {"channels": channels}, broadcast=True)
 
-# @socketio.on("submit channel")
-# def list_channels(data):
-#     print(data, file=sys.stderr)
-#     emit("announce", {"channels": data}, broadcast=True)
+@socketio.on("add username")
+def add_username(username):
+    print(username, file=sys.stderr)
+    emit("send username", {"username": username}, broadcast=True)

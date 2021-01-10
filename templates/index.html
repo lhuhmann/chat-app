@@ -7,6 +7,7 @@
         <title>Flack</title>
     </head>
     <body>
+        <div id="displayed_username"></div>
 
         <section>
             <h1>Channels</h1>
@@ -16,9 +17,16 @@
 
         <!-- Prevent the form from actually submitting and instead click the button.
         We want the user to have the same action on hitting enter as on the button click. -->
-        <form onsubmit="document.querySelector('#channel_submit').click(); return false;">
+        <form id="channel_form" onsubmit="document.querySelector('#channel_submit').click(); return false;">
             <input id="channel" autocomplete="off" autofocus placeholder="Channel name" type="text">
             <button type="button" id="channel_submit">Submit</button>
+        </form>
+
+        <!-- Prevent the form from actually submitting and instead click the button.
+        We want the user to have the same action on hitting enter as on the button click. -->
+        <form id="username_form" onsubmit="document.querySelector('#username_submit').click(); return false;">
+            <input id="username" autocomplete="off" autofocus placeholder="Username" type="text">
+            <button type="button" id="username_submit">Submit</button>
         </form>
 
     </body>
