@@ -1,33 +1,67 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" type="text/css" href="/static/bootstrap-4.4.1-dist/css/bootstrap.min.css">
+
+        <!-- DataTables CSS -->
+        <!-- <link rel="stylesheet" type="text/css" href="/static/DataTables/DataTables-1.10.20/css/dataTables.bootstrap4.min.css"> -->
+
+        <!-- Select2 CSS -->
+        <!-- <link rel="stylesheet" type="text/css" href="/static/select2.min.css"> -->
+
+        <!-- Overall CSS -->
+        <link rel="stylesheet" type="text/css" href="/static/style.css">
+
         <!-- for JS socketio support-->
         <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js"></script>
         <script src="{{ url_for('static', filename='index.js') }}"></script>
         <title>Flack</title>
     </head>
     <body>
-        <div id="displayed_username"></div>
+        <div class="topbar">
+            <div id="displayed_username"></div>
+            <!-- Prevent the form from actually submitting and instead click the button.
+            We want the user to have the same action on hitting enter as on the button click. -->
+            <form id="username_form" onsubmit="document.querySelector('#username_submit').click(); return false;">
+                <input id="username" autocomplete="off" autofocus placeholder="Username" type="text">
+                <button type="button" id="username_submit">Submit</button>
+            </form>
+        </div>
 
-        <section>
-            <h1>Channels</h1>
-            <ul id="channels_list">
-            </ul>
-        </section>
+        <div class="split left">
+            <section>
+                <h3>Channels</h3>
+                <ul id="channels_list">
+                </ul>
+            </section>
 
-        <!-- Prevent the form from actually submitting and instead click the button.
-        We want the user to have the same action on hitting enter as on the button click. -->
-        <form id="channel_form" onsubmit="document.querySelector('#channel_submit').click(); return false;">
-            <input id="channel" autocomplete="off" autofocus placeholder="Channel name" type="text">
-            <button type="button" id="channel_submit">Submit</button>
-        </form>
+            <!-- Prevent the form from actually submitting and instead click the button.
+            We want the user to have the same action on hitting enter as on the button click. -->
+            <form id="channel_form" onsubmit="document.querySelector('#channel_submit').click(); return false;">
+                <h5>Add channel</h5>
+                <input id="channel" autocomplete="off" autofocus placeholder="Channel name" type="text">
+                <button type="button" id="channel_submit">Submit</button>
+            </form>
+        </div>
 
-        <!-- Prevent the form from actually submitting and instead click the button.
-        We want the user to have the same action on hitting enter as on the button click. -->
-        <form id="username_form" onsubmit="document.querySelector('#username_submit').click(); return false;">
-            <input id="username" autocomplete="off" autofocus placeholder="Username" type="text">
-            <button type="button" id="username_submit">Submit</button>
-        </form>
+        <div class="split right">
+            <h2 id="current_channel">{{channel}}</h2>
+            <section>
+                <ul id="messages_list">
+                </ul>
+            </section>
+            <form id="message_form" onsubmit="document.querySelector('#message_submit').click(); return false;">
+                <h5>Send message</h5>
+                <textarea id="message" rows=2 cols=100 placeholder="Message"></textarea>
+                <br>
+                <button type="button" id="message_submit">Send</button>
+              </form>
+        </div>
 
     </body>
 </html>

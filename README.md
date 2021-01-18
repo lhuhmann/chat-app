@@ -24,3 +24,7 @@ Run the app with `python chat-app.py <portnumber>`.
 ### HTML
 
 * `templates/index.html`
+
+### CSS
+
+* `static/style.css`
