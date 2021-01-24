@@ -25,13 +25,10 @@ function display_messages(channels) {
     document.getElementById("messages_list").innerHTML = "";
     // show updated messages
     for (const [channel, message_list] of Object.entries(channels)) {
-        console.log(channel)
-        console.log(message_list)
         // find the list of messages for the channel on display
         if (channel == document.querySelector('#current_channel').innerHTML) {
             // show all the messages by looping over
             message_list.forEach(function (message) {
-                console.log(message)
                 // there is only one username and message in the dictionary
                 // so a for loop feels a bit silly here
                 for (const [username, text] of Object.entries(message)) {

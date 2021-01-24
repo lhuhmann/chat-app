@@ -34,6 +34,9 @@ def update_messages(channel = None, username = None, message = None):
     if channel:
         # append submitted username-message pair to the relevant channel
         channels[channel].append({f"{username}": f"{message}"})
+        # if there are too many messages, truncate to 100 messages
+        if len(channels[channel]) > 100:
+            channels[channel] = channels[channel][-100:]
     emit("send messages", {"channels": channels}, broadcast=True)
 
 @socketio.on("add username")
