@@ -11,14 +11,15 @@ socketio = SocketIO(app)
 # when app is first started, define only general channel
 channels = {'general': []}
 
-@app.route("/<string:channel_name>")
+@app.route("/channel/<string:channel_name>")
 def channel(channel_name):
     return render_template("index.html", channel = channel_name)
 
 @app.route("/")
 def index():
-    '''Redirect to general channel'''
-    return redirect(url_for('channel', channel_name="general"))
+    '''Send user to a blank html page that will run the javascript
+    to identify and load the correct page.'''
+    return render_template('go_to_channel.html')
 
 @socketio.on("update channels")
 def update_channels(new_channel = None):

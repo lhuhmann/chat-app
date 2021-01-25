@@ -1,3 +1,13 @@
+function go_to_channel() {
+    if (localStorage.getItem('channel')) {
+        channel = localStorage.getItem('channel')
+        console.log(`retrieving channel: ${channel}`)
+    } else {
+        channel = 'general'
+    }
+    window.location = `channel/${channel}`
+}
+
 function display_channels(channels) {
     // clear list of channels
     document.getElementById("channels_list").innerHTML = "";
@@ -5,8 +15,7 @@ function display_channels(channels) {
     for (const [channel, message_list] of Object.entries(channels)) {
         var ul = document.getElementById('channels_list');
         var li = document.createElement("li");
-        //li.innerHTML += channel;
-        li.innerHTML += `<a href=${channel}>${channel}</a>`
+        li.innerHTML += `<a href='/channel/${channel}'>${channel}</a>`
         ul.appendChild(li);
     };
 };
@@ -43,6 +52,12 @@ function display_messages(channels) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Save channel when page loads, so that if user closes page and goes back to 
+    // app, this channel will be loaded (assuming user doesn't specify a different channel in url)
+    channel = document.querySelector('#current_channel').innerHTML
+    console.log(`saving channel: ${channel}`)
+    localStorage.setItem('channel', channel);
+
     // if user exists, display username, channel form,
     //and message form but not username form
     if (localStorage.getItem('username')) {
