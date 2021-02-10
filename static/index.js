@@ -1,3 +1,7 @@
+/**
+ * If a channel is specified in localStorage, go to that channel.
+ * Otherwise, go to the general channel.
+ */
 function go_to_channel() {
     if (localStorage.getItem('channel')) {
         channel = localStorage.getItem('channel')
@@ -8,6 +12,13 @@ function go_to_channel() {
     window.location = `channel/${channel}`
 }
 
+/**
+ * Display the full list of channels with a link from each channel name
+ * to the webpage for that channel.
+ * 
+ * @param {object} channels - A JavaScript object containing each channel
+ * name (a string) and that channel's list of messages.
+ */
 function display_channels(channels) {
     // clear list of channels
     document.getElementById("channels_list").innerHTML = "";
@@ -20,6 +31,11 @@ function display_channels(channels) {
     };
 };
 
+/**
+ * Displays the passed-in username at the top of the webpage.
+ * 
+ * @param {string} username - The user's username
+ */
 function display_username(username) {
     // Add to the document
     const name = document.createElement("name")
@@ -29,6 +45,16 @@ function display_username(username) {
     document.querySelector("#displayed_username").append(name);
 }
 
+/**
+ * Display the up-to-date list of messages for the current channel.
+ * 
+ * Looks in the passed-in channels list for the current channel. Displays the contents
+ * of each message in that channel along with the username associated with the message.
+ * 
+ * @param {object} channels - A JavaScript object containing each channel name (a string)
+ * and that channel's list of messages. The messages consistent of a username, text
+ * pair of strings.
+ */
 function display_messages(channels) {
     // clear old displayed messages
     document.getElementById("messages_list").innerHTML = "";
@@ -51,6 +77,7 @@ function display_messages(channels) {
     };
 }
 
+// The various events to occur once the DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Save channel when page loads, so that if user closes page and goes back to 
     // app, this channel will be loaded (assuming user doesn't specify a different channel in url)
@@ -87,9 +114,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // channel name
         document.querySelector('#channel_submit').onclick = function() {
             const new_channel = document.querySelector('#channel').value
-            // clear field where channel name was entered
-            document.getElementById('channel').value = ''
-            socket.emit('update channels', new_channel);
+            // I've decided not to clear the channel name if the user input is invalid,
+            // although I'm not sure what is preferable.
+            if (new_channel == "") {
+                alert("Error: Input is empty");
+            } else if (/\s/g.test(new_channel)) {
+                alert("Error: Channel name must not contain whitespace");
+            } else if (new_channel.length > 30) {
+                alert("Error: Channel name must not be longer than 30 characters");
+            } else {
+                // clear field where channel name was entered
+                document.getElementById('channel').value = ''
+                socket.emit('update channels', new_channel);
+            }
         };
 
         // When message_submit button is clicked,
