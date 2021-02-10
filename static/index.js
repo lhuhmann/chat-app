@@ -187,3 +187,31 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector("#message_form").style.visibility = 'visible'
     });
 });
+
+// Scroll down as content is added to the page.
+// I took this from https://gist.github.com/hssm/1a8136059011e491d0d8.
+// This means if new channels appear on the channels list or new messages
+// appear in the messages list, the user is scrolled down to see them.
+document.addEventListener("DOMNodeInserted", function () {
+    var b = document.body;
+
+    // Additional padding/border to account for in calculations
+    var offset = b.scrollHeight - b.offsetHeight;
+    
+    // Amount we have scrolled down
+    var scrollPos = b.scrollTop + offset;
+    
+    // Amount of scroll available, minus the visible portion (because scrollPos
+    // is the *top* of the visible portion)
+    var scrollBottom = (b.scrollHeight - (b.clientHeight + offset));
+    
+    //console.log("offset: " + offset);
+    //console.log("scrollPos:" + scrollPos);
+    //console.log("scrollBottom:" + scrollBottom);
+    
+    // If we are at the bottom, go to the bottom again.
+    if (scrollPos >= scrollBottom) {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+    
+}, false);
