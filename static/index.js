@@ -12,6 +12,21 @@ function go_to_channel() {
     window.location = `channel/${channel}`
 }
 
+function input_is_valid(input) {
+    if (input == "") {
+        alert("Error: Input is empty");
+        return false;
+    } else if (/\s/g.test(input)) {
+        alert("Error: Input must not contain whitespace");
+        return false;
+    } else if (input.length > 30) {
+        alert("Error: Input must not be longer than 30 characters");
+        return false;
+    } else {
+        return true;
+    }
+}
+
 /**
  * Display the full list of channels with a link from each channel name
  * to the webpage for that channel.
@@ -116,13 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const new_channel = document.querySelector('#channel').value
             // I've decided not to clear the channel name if the user input is invalid,
             // although I'm not sure what is preferable.
-            if (new_channel == "") {
-                alert("Error: Input is empty");
-            } else if (/\s/g.test(new_channel)) {
-                alert("Error: Channel name must not contain whitespace");
-            } else if (new_channel.length > 30) {
-                alert("Error: Channel name must not be longer than 30 characters");
-            } else {
+            if (input_is_valid(new_channel)) {
                 // clear field where channel name was entered
                 document.getElementById('channel').value = ''
                 socket.emit('update channels', new_channel);
@@ -146,7 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // username
         document.querySelector('#username_submit').onclick = function() {
             const username = document.querySelector('#username').value
-            socket.emit('add username', username);
+            if (input_is_valid(username)) {
+                socket.emit('add username', username);
+            }
         };
     });
 
