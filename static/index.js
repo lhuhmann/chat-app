@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save channel when page loads, so that if user closes page and goes back to 
     // app, this channel will be loaded (assuming user doesn't specify a different channel in url)
     channel = document.querySelector('#current_channel').innerHTML
-    console.log(`saving channel: ${channel}`)
     localStorage.setItem('channel', channel);
 
     // if user exists, display username, channel form,
@@ -164,6 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // When channels are sent, update the channel display
     socket.on('send channels', data => {
         const channels = data["channels"] 
+        // alert user if the channel they are trying to add already exists
+        if (data["duplicate_channel_added"]) {
+            alert("A channel with the specified name already exists")
+        }
         // display list of channels
         display_channels(channels)
     });

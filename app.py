@@ -1,7 +1,7 @@
 import os
 import sys
 
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
@@ -25,10 +25,13 @@ def index():
 def update_channels(new_channel = None):
     # if the user specified a channel that isn't already in the dictionary,
     # add a dictionary entry for that channel
+    duplicate_channel_added = False
     if new_channel:
         if not new_channel in channels:
             channels[new_channel] = []
-    emit("send channels", {"channels": channels}, broadcast=True)
+        else:
+            duplicate_channel_added = True
+    emit("send channels", {"channels": channels, "duplicate_channel_added": duplicate_channel_added}, broadcast=True)
 
 @socketio.on("update messages")
 def update_messages(channel = None, username = None, message = None):
@@ -42,5 +45,4 @@ def update_messages(channel = None, username = None, message = None):
 
 @socketio.on("add username")
 def add_username(username):
-    print(username, file=sys.stderr)
     emit("send username", {"username": username}, broadcast=True)
