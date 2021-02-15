@@ -14,8 +14,12 @@ textarea {
   max-width: 100%;
 }
 
-input {
+#channel {
   width: 20ch;
+}
+
+#message {
+  width: 100ch;
 }
 
 /* Add a black background color to the top navigation */

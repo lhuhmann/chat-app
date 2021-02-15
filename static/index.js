@@ -1,127 +1,10 @@
-/**
- * If a channel is specified in localStorage, go to that channel.
- * Otherwise, go to the general channel.
- */
-function go_to_channel() {
-    if (localStorage.getItem('channel')) {
-        channel = localStorage.getItem('channel')
-        console.log(`retrieving channel: ${channel}`)
-    } else {
-        channel = 'general'
-    }
-    window.location = `channel/${channel}`
-}
-
-function input_is_valid(input) {
-    if (input == "") {
-        alert("Error: Input is empty");
-        return false;
-    } else if (/\s/g.test(input)) {
-        alert("Error: Input must not contain whitespace");
-        return false;
-    } else if (input.length > 30) {
-        alert("Error: Input must not be longer than 30 characters");
-        return false;
-    } else {
-        return true;
-    }
-}
-
-/**
- * Display the full list of channels with a link from each channel name
- * to the webpage for that channel.
- * 
- * @param {object} channels - A JavaScript object containing each channel
- * name (a string) and that channel's list of messages.
- */
-function display_channels(channels) {
-    // clear list of channels
-    document.getElementById("channels_list").innerHTML = "";
-    // show list of channels
-    for (const [channel, message_list] of Object.entries(channels)) {
-        var ul = document.getElementById('channels_list');
-        var li = document.createElement("li");
-        li.innerHTML += `<a href='/channel/${channel}'>${channel}</a>`
-        ul.appendChild(li);
-    };
-};
-
-/**
- * Displays the passed-in username at the top of the webpage.
- * 
- * @param {string} username - The user's username
- */
-function display_username(username) {
-    // Add to the document
-    const name = document.createElement("name")
-    // Important to use backticks and not apostrophes/single quotes here, 
-    // otherwise template literals will not resovle.
-    name.innerHTML = `User: ${username}`;
-    document.querySelector("#displayed_username").append(name);
-}
-
-/**
- * Display the up-to-date list of messages for the current channel.
- * 
- * Looks in the passed-in channels list for the current channel. Displays the contents
- * of each message in that channel along with the username associated with the message.
- * 
- * @param {object} channels - A JavaScript object containing each channel name (a string)
- * and that channel's list of messages. The messages consistent of a username, text
- * pair of strings.
- */
-function display_messages(channels) {
-    // clear old displayed messages
-    document.getElementById("messages_list").innerHTML = "";
-    // show updated messages
-    for (const [channel, message_list] of Object.entries(channels)) {
-        // find the list of messages for the channel on display
-        if (channel == document.querySelector('#current_channel').innerHTML) {
-            // show all the messages by looping over
-            message_list.forEach(function (message) {
-                // there is only one username and message in the dictionary
-                // so a for loop feels a bit silly here
-                for (const [username, text] of Object.entries(message)) {
-                    var ul = document.getElementById('messages_list');
-                    var li = document.createElement("li");
-                    li.innerHTML += `${username}: ${text}`;
-                    ul.appendChild(li);
-                }
-            })
-        }
-
-        // Scroll page so user can see latest messages
-        // I adapted this from https://gist.github.com/hssm/1a8136059011e491d0d8.
-        // This means if new new messages
-        // appear in the messages list, the user is scrolled down to see them.
-        var message_pane = document.getElementById('messages_list');
-
-        // Additional padding/border to account for in calculations
-        var offset = message_pane.scrollHeight - message_pane.offsetHeight;
-        
-        // Amount we have scrolled down
-        var scrollPos = message_pane.scrollTop + offset;
-        
-        // Amount of scroll available, minus the visible portion (because scrollPos
-        // is the *top* of the visible portion)
-        var scrollBottom = (message_pane.scrollHeight - (message_pane.clientHeight + offset));
-        
-        //console.log("offset: " + offset);
-        //console.log("scrollPos:" + scrollPos);
-        //console.log("scrollBottom:" + scrollBottom);
-        
-        // If we are at the bottom, go to the bottom again.
-        if (scrollPos >= scrollBottom) {
-            window.scrollTo(0, message_pane.scrollHeight);
-        }
-    };
-}
-
 // The various events to occur once the DOM content is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // get the channel from local storage or if none exists default to 'general' channel
+    channel = get_channel()
+    load_page(channel)
     // Save channel when page loads, so that if user closes page and goes back to 
     // app, this channel will be loaded (assuming user doesn't specify a different channel in url)
-    channel = document.querySelector('#current_channel').innerHTML
     localStorage.setItem('channel', channel);
 
     // if user exists, display username, channel form,
@@ -215,3 +98,131 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector("#message_form").style.visibility = 'visible'
     });
 });
+
+/**
+ * If a channel is specified in localStorage, return that channel.
+ * Otherwise, return the general channel.
+ */
+function get_channel() {
+    if (localStorage.getItem('channel')) {
+        channel = localStorage.getItem('channel')
+    } else {
+        channel = 'general'
+    }
+    return channel
+}
+
+function input_is_valid(input) {
+    if (input == "") {
+        alert("Error: Input is empty");
+        return false;
+    } else if (/\s/g.test(input)) {
+        alert("Error: Input must not contain whitespace");
+        return false;
+    } else if (input.length > 30) {
+        alert("Error: Input must not be longer than 30 characters");
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/**
+ * Display the full list of channels with a link from each channel name
+ * to the webpage for that channel.
+ * 
+ * @param {object} channels - A JavaScript object containing each channel
+ * name (a string) and that channel's list of messages.
+ */
+function display_channels(channels) {
+    // clear list of channels
+    document.getElementById("channels_list").innerHTML = "";
+    // show list of channels
+    for (const [channel, message_list] of Object.entries(channels)) {
+        var ul = document.getElementById('channels_list');
+        var li = document.createElement("li");
+        li.innerHTML += `<a href='' class='nav-link' onclick='load_page("${channel}"); return false;'>${channel}</a>`
+        ul.appendChild(li);
+    };
+};
+
+function load_page(channel) {
+    const request  = new XMLHttpRequest();
+    request.open('GET', `/channels/${channel}`);
+    request.onload = () => {
+        const channels = JSON.parse(request.responseText);
+        // first update the current channel on the page
+        document.querySelector('#current_channel').innerHTML = channel
+        // then call display_messages function on the channels in the response
+        display_messages(channels)
+    };
+    request.send();
+}
+
+/**
+ * Displays the passed-in username at the top of the webpage.
+ * 
+ * @param {string} username - The user's username
+ */
+function display_username(username) {
+    // Important to use backticks and not apostrophes/single quotes here, 
+    // otherwise template literals will not resovle.
+    document.querySelector("#displayed_username").innerHTML = `User: ${username}`;
+}
+
+/**
+ * Display the up-to-date list of messages for the current channel.
+ * 
+ * Looks in the passed-in channels list for the current channel. Displays the contents
+ * of each message in that channel along with the username associated with the message.
+ * 
+ * @param {object} channels - A JavaScript object containing each channel name (a string)
+ * and that channel's list of messages. The messages consistent of a username, text
+ * pair of strings.
+ */
+function display_messages(channels) {
+    // clear old displayed messages
+    document.getElementById("messages_list").innerHTML = "";
+    // show updated messages
+    for (const [channel, message_list] of Object.entries(channels)) {
+        // find the list of messages for the channel on display
+        if (channel == document.querySelector('#current_channel').innerHTML) {
+            // show all the messages by looping over
+            message_list.forEach(function (message) {
+                // there is only one username and message in the dictionary
+                // so a for loop feels a bit silly here
+                for (const [username, text] of Object.entries(message)) {
+                    var ul = document.getElementById('messages_list');
+                    var li = document.createElement("li");
+                    li.innerHTML += `${username}: ${text}`;
+                    ul.appendChild(li);
+                }
+            })
+        }
+
+        // Scroll page so user can see latest messages
+        // I adapted this from https://gist.github.com/hssm/1a8136059011e491d0d8.
+        // This means if new new messages
+        // appear in the messages list, the user is scrolled down to see them.
+        var message_pane = document.getElementById('messages_list');
+
+        // Additional padding/border to account for in calculations
+        var offset = message_pane.scrollHeight - message_pane.offsetHeight;
+        
+        // Amount we have scrolled down
+        var scrollPos = message_pane.scrollTop + offset;
+        
+        // Amount of scroll available, minus the visible portion (because scrollPos
+        // is the *top* of the visible portion)
+        var scrollBottom = (message_pane.scrollHeight - (message_pane.clientHeight + offset));
+        
+        //console.log("offset: " + offset);
+        //console.log("scrollPos:" + scrollPos);
+        //console.log("scrollBottom:" + scrollBottom);
+        
+        // If we are at the bottom, go to the bottom again.
+        if (scrollPos >= scrollBottom) {
+            window.scrollTo(0, message_pane.scrollHeight);
+        }
+    };
+}
