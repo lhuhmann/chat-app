@@ -45,4 +45,4 @@ def update_messages(channel = None, username = None, message = None):
 
 @socketio.on("add username")
 def add_username(username):
-    emit("send username", {"username": username}, broadcast=True)
+    emit("send username", {"username": username})
