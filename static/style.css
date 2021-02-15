@@ -3,7 +3,7 @@ body {
   grid-template-areas:
     "head head"
     "channels messages";
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: max(25ch, 30%)  1fr;
 }
 
 .error {
@@ -12,6 +12,10 @@ body {
 
 textarea {
   max-width: 100%;
+}
+
+input {
+  width: 20ch;
 }
 
 /* Add a black background color to the top navigation */
