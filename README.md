@@ -15,16 +15,17 @@ Run the app with `python chat-app.py <portnumber>`.
 ### Python
 
 * `chat-app.py` launches the app.
-* `app.py` defines the routes.
+* `app.py` defines the routes and the socketio events to send the channels, messages, and username to the front-end.
 
 ### JavaScript
 
-* `static/index.js`
+* `static/index.js` handles the front-end display of channels, messages, and username, validates and conveys user inputs to the server, and automatically scrolls the page as new messages appear.
 
 ### HTML
 
-* `templates/index.html`
+* `templates/index.html` sets up the basic html for the webpage.
 
 ### CSS
 
-* `static/style.css`
+* `bootstrap.min.css` sets some generic (bootstrap) webpage styling.
+* `static/style.css` imports bootstrap.min.css and sets custom webpage styling.
