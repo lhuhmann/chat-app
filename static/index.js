@@ -146,7 +146,7 @@ function display_channels(channels) {
     };
 };
 
-function load_page(channel) {
+function load_page(channel, add_to_history = true) {
     const request  = new XMLHttpRequest();
     request.open('GET', `/channels/${channel}`);
     request.onload = () => {
@@ -155,9 +155,23 @@ function load_page(channel) {
         document.querySelector('#current_channel').innerHTML = channel
         // then call display_messages function on the channels in the response
         display_messages(channels)
+    
+    if (add_to_history) {
+        // Push state to URL.
+        document.title = channel;
+        history.pushState({'channel': channel}, channel, channel);
+    }
     };
     request.send();
 }
+
+// When back button is clicked, go back to previous channel and
+// pull the latest messages for that channel.
+window.onpopstate = e => {
+    const data = e.state;
+    channel = data.channel;
+    load_page(channel, add_to_history = false)
+};
 
 /**
  * Displays the passed-in username at the top of the webpage.
@@ -183,10 +197,12 @@ function display_username(username) {
 function display_messages(channels) {
     // clear old displayed messages
     document.getElementById("messages_list").innerHTML = "";
+    // identify current channel
+    current_channel = document.querySelector('#current_channel').innerHTML
     // show updated messages
     for (const [channel, message_list] of Object.entries(channels)) {
         // find the list of messages for the channel on display
-        if (channel == document.querySelector('#current_channel').innerHTML) {
+        if (channel == current_channel) {
             // show all the messages by looping over
             message_list.forEach(function (message) {
                 // there is only one username and message in the dictionary
